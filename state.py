@@ -13,3 +13,7 @@ class TicketState(TypedDict):
     urgency:Optional[str]
     draft_response:Optional[str]
     resolutional_status:Optional[str]
+    
+    sentiment: Optional[str]
+    requires_tool: Optional[bool]
+    tool_name: Optional[str]
