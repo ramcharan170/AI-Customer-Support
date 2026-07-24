@@ -17,22 +17,22 @@ def generate_response(state: TicketState) -> TicketState:
     Generate a customer support response using the current ticket state.
     """
 
-customer = state.get("customer_info", {})
-orders = state.get("ticket_details", [])
+    customer = state.get("customer_info", {})
+    orders = state.get("ticket_details", [])
 
-customer_name = customer.get("name", "Customer")
-customer_plan = customer.get("plan", "Unknown")
+    customer_name = customer.get("name", "Customer")
+    customer_plan = customer.get("plan", "Unknown")
 
-order_summary = ""
+    order_summary = ""
 
-for order in orders:
-    order_summary += (
-        f"- Item: {order['item']}\n"
-        f"  Status: {order['status']}\n"
-        f"  Amount: ${order['amount']}\n\n"
-    )
+    for order in orders:
+        order_summary += (
+            f"- Item: {order['item']}\n"
+            f"  Status: {order['status']}\n"
+            f"  Amount: ${order['amount']}\n\n"
+        )
 
-user_prompt = f"""
+    user_prompt = f"""
 Customer Email:
 {state.get("raw_email")}
 
@@ -50,3 +50,14 @@ Category: {state.get("category")}
 Sentiment: {state.get("sentiment")}
 Urgency: {state.get("urgency")}
 """
+
+    draft = invoke_structured_llm(
+        system_prompt=RESPONSE_SYSTEM_PROMPT,
+        user_prompt=user_prompt,
+        output_model=DraftResponse,
+    )
+
+    return {
+        **state,
+        "draft_response": draft.response,
+    }
